@@ -1,38 +1,20 @@
-import React, { useEffect, useMemo } from 'react';
-import { getPartItems } from '../../utils';
+import React, { useMemo } from 'react';
+import classNames from 'classnames';
 
 type Props = {
-  items: string[];
-  total: number;
+  total: string[];
   perPage: number;
   currentPage: number;
-  setElements: React.Dispatch<React.SetStateAction<string[]>>;
   onPageChange: React.Dispatch<React.SetStateAction<number>>;
-  elements: string[];
 };
 
 export const Pagination: React.FC<Props> = ({
-  items,
   total,
   perPage,
   currentPage,
-  setElements,
   onPageChange,
-  elements,
 }) => {
-  const pages = Math.ceil(total / Number(perPage));
-
-  useEffect(() => {
-    const updatedElements = getPartItems(items, currentPage, perPage);
-
-    setElements(updatedElements);
-  }, [currentPage, perPage, items, setElements]);
-
-  const selectedElements = elements.map(item => (
-    <li key={item} data-cy="item">
-      {item}
-    </li>
-  ));
+  const pages = Math.ceil(total.length / Number(perPage));
 
   const visibleButtons = useMemo(() => {
     const handlePageClick = (pageNumber: number) => {
@@ -45,7 +27,7 @@ export const Pagination: React.FC<Props> = ({
       buttons.push(
         <li
           key={i}
-          className={`page-item ${currentPage === i ? 'active' : ''}`}
+          className={classNames('page-item', { active: currentPage === i })}
         >
           <a
             onClick={() => handlePageClick(i)}
@@ -65,7 +47,9 @@ export const Pagination: React.FC<Props> = ({
   return (
     <>
       <ul className="pagination">
-        <li className={`page-item ${currentPage === 1 && 'disabled'}`}>
+        <li
+          className={classNames('page-item', { disabled: currentPage === 1 })}
+        >
           <a
             onClick={() => {
               if (currentPage !== 1) {
@@ -81,7 +65,11 @@ export const Pagination: React.FC<Props> = ({
           </a>
         </li>
         {visibleButtons}
-        <li className={`page-item ${currentPage === pages && 'disabled'}`}>
+        <li
+          className={classNames('page-item', {
+            disabled: currentPage === pages,
+          })}
+        >
           <a
             onClick={() => {
               if (currentPage !== pages) {
@@ -97,7 +85,6 @@ export const Pagination: React.FC<Props> = ({
           </a>
         </li>
       </ul>
-      <ul>{selectedElements}</ul>
     </>
   );
 };

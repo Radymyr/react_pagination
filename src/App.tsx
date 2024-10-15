@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
-import { getNumbers } from './utils';
+import { getNumbers, getPartItems } from './utils';
 import { Pagination } from './components/Pagination';
 import { DropDown } from './components/DropDown/DropDown';
+import { ElementsOnPage } from './components/ElementsOnPage/ElementsOnPage';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const items = getNumbers(1, 42).map(n => `Item ${n}`);
@@ -17,6 +18,12 @@ export const App: React.FC = () => {
     ? elements[elements.length - 1].split(' ')[1]
     : 5;
 
+  useEffect(() => {
+    const updatedElements = getPartItems(items, page, perPage);
+
+    setElements(updatedElements);
+  }, [perPage, setElements, page]);
+
   return (
     <div className="container">
       <h1>Items with Pagination</h1>
@@ -27,14 +34,12 @@ export const App: React.FC = () => {
 
       <DropDown value={perPage} setValue={setPerPage} setPage={setPage} />
       <Pagination
-        total={items.length}
+        total={items}
         perPage={perPage}
         currentPage={page}
         onPageChange={setPage}
-        setElements={setElements}
-        items={items}
-        elements={elements}
       />
+      <ElementsOnPage elements={elements} />
     </div>
   );
 };
