@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import { getNumbers, getPartItems } from './utils';
 import { Pagination } from './components/Pagination';
@@ -11,18 +11,13 @@ const items = getNumbers(1, 42).map(n => `Item ${n}`);
 export const App: React.FC = () => {
   const [perPage, setPerPage] = useState(5);
   const [page, setPage] = useState(1);
-  const [elements, setElements] = useState<string[]>([]);
 
-  const startRange = elements[0] ? elements[0].split(' ')[1] : 1;
-  const endRange = elements[elements.length - 1]
-    ? elements[elements.length - 1].split(' ')[1]
-    : 5;
+  const updatedElements = getPartItems(items, page, perPage);
+  const firstElement = updatedElements[0];
+  const lastElement = updatedElements[updatedElements.length - 1];
 
-  useEffect(() => {
-    const updatedElements = getPartItems(items, page, perPage);
-
-    setElements(updatedElements);
-  }, [perPage, setElements, page]);
+  const startRange = firstElement ? firstElement.split(' ')[1] : 1;
+  const endRange = lastElement ? lastElement.split(' ')[1] : 5;
 
   return (
     <div className="container">
@@ -39,7 +34,7 @@ export const App: React.FC = () => {
         currentPage={page}
         onPageChange={setPage}
       />
-      <ElementsOnPage elements={elements} />
+      <ElementsOnPage elements={updatedElements} />
     </div>
   );
 };

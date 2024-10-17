@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import classNames from 'classnames';
+import { getNumbers } from '../../utils';
 
 type Props = {
   total: string[];
@@ -21,28 +22,40 @@ export const Pagination: React.FC<Props> = ({
       onPageChange(pageNumber);
     };
 
-    const buttons = [];
-
-    for (let i = 1; i <= pages; i += 1) {
-      buttons.push(
+    const buttons: JSX.Element[] = getNumbers(1, pages).map(item => {
+      return (
         <li
-          key={i}
-          className={classNames('page-item', { active: currentPage === i })}
+          key={item}
+          className={classNames('page-item', {
+            active: currentPage === item,
+          })}
         >
           <a
-            onClick={() => handlePageClick(i)}
+            onClick={() => handlePageClick(item)}
             data-cy="pageLink"
             className="page-link"
-            href={`#${i}`}
+            href={`#${item}`}
           >
-            {i}
+            {item}
           </a>
-        </li>,
+        </li>
       );
-    }
+    });
 
     return buttons;
   }, [onPageChange, pages, currentPage]);
+
+  const handleDecrement = () => {
+    if (currentPage !== 1) {
+      onPageChange(currentPage - 1);
+    }
+  };
+
+  const handleIncrement = () => {
+    if (currentPage !== pages) {
+      onPageChange(currentPage + 1);
+    }
+  };
 
   return (
     <>
@@ -51,11 +64,7 @@ export const Pagination: React.FC<Props> = ({
           className={classNames('page-item', { disabled: currentPage === 1 })}
         >
           <a
-            onClick={() => {
-              if (currentPage !== 1) {
-                onPageChange(currentPage - 1);
-              }
-            }}
+            onClick={handleDecrement}
             data-cy="prevLink"
             className="page-link"
             href="#prev"
@@ -71,11 +80,7 @@ export const Pagination: React.FC<Props> = ({
           })}
         >
           <a
-            onClick={() => {
-              if (currentPage !== pages) {
-                onPageChange(currentPage + 1);
-              }
-            }}
+            onClick={handleIncrement}
             data-cy="nextLink"
             className="page-link"
             href="#next"
